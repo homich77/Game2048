@@ -94,7 +94,7 @@ def is_continue():
 def move(actionTools):
     global board
 
-    oldBoard = board
+    oldBoard = list(board)
     board = rotate(actionTools["rotate"])
     for i in range(size):
         board[i] = row_sum(board[i], actionTools)
