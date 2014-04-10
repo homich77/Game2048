@@ -6,5 +6,5 @@ random_coord(2)
 # isActive = False - "game over"
 while isActive:
     print_board()
-    #move(arrows[enter_direction()])
-    isActive = move(arrows['a'])
+    isActive = move(arrows[enter_direction()])
+    #isActive = move(arrows['a'])
