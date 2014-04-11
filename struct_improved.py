@@ -1,17 +1,22 @@
 from random import sample
+import sql_manager
 
 # Global variable
 size = 4
 empty = '0'
-board = []
 has2048 = False
 arrows = {'w': {'step': 1, 'rotate': 1 },
           'a': {'step': 1, 'rotate': 0 },
           's': {'step':-1, 'rotate': 1 },
-          'd': {'step':-1, 'rotate': 0 }}
-
-for i in range(size):
-    board.append([empty]*size)
+          'd': {'step':-1, 'rotate': 0 },
+          'exit': {}
+          }
+def generate_board():
+    global board
+    board = []
+    for i in range(size):
+        board.append([empty]*size)
+    random_coord(2)
 
 def random_coord(outDigitsCount = 1):
     # Find coordinates of empty fields
@@ -27,6 +32,7 @@ def has_empty_field():
         for cell in row:
             if cell == empty:
                 return True
+    print 'Game over'
     return False
 
 def print_board():
@@ -74,24 +80,28 @@ def enter_direction():
         return enter_direction()
     return action
 
+'''
 def new_board():
     for row in board:
         for cell in row:
             cell = empty
-    random_coord(board, 2)
+    random_coord(board, 2)'''
 # Game over
 def is_continue():
     status = raw_input("Would you like to play again? (y/n):")
     # Start new game
     if status == 'y':
-        new_board()
-        random_coord(2)
+        generate_board()
         return True
     # Finish
     else:
         return False
 
-def move(actionTools):
+def move(action):
+    if action == 'exit':
+        return False
+
+    actionTools = arrows[action]
     global board
 
     oldBoard = list(board)
@@ -108,5 +118,6 @@ def move(actionTools):
     elif oldBoard != board and not has2048:
         random_coord()
         return True
+    # elif not hasEmpty and not check_sum_opportunity() or has2048:
     elif not hasEmpty or has2048:
         return is_continue()
