@@ -85,8 +85,7 @@ class Struct2048(object):
     def has_2048(self, row):
         if '2048' in row:
             print "You won!"
-            global has2048
-            has2048 = True
+            self.has2048 = True
 
     def enter_direction(self):
         action = raw_input("Enter direction:")
