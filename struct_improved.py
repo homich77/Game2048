@@ -1,21 +1,27 @@
 from random import sample
-#import sql_manager
+from sql_manager import SqlManager
+
 
 arrows = {'w': {'step': 1, 'rotate': 1 },
               'a': {'step': 1, 'rotate': 0 },
               's': {'step':-1, 'rotate': 1 },
               'd': {'step':-1, 'rotate': 0 },
-              'exit': {}
+              'save': {},
+              'exit': {},
+              'load': {}
               }
 
 class Struct2048(object):
     # Global variable
     board = []
+    isActive = True
+    sqlNameKey = 'game2048'
 
     def __init__(self, size = 4, empty='0'):
         self.size = size
         self.empty = empty
         self.has2048 = False
+        self.sql = SqlManager()
 
     def generate_board(self):
         self.has2048 = False
@@ -84,7 +90,7 @@ class Struct2048(object):
 
     def enter_direction(self):
         action = raw_input("Enter direction:")
-        if action not in self.arrows:
+        if action not in arrows:
             print "It's not correct"
             return self.enter_direction()
         return action
@@ -106,27 +112,40 @@ class Struct2048(object):
         else:
             return False
 
+
+
     def move(self, action):
         if action == 'exit':
-            return False
+            self.isActive = False
+            return
+        elif action == 'save':
+            self.sql.set('game2048', self.board)
+            return
+        elif action == 'load':
+            self.board = self.sql.get('game2048')
+            if self.board:
+                print 'Board was loaded'
+                self.isActive = True
+            else:
+                self.isActive = False
+            return
 
         actionTools = arrows[action]
 
         oldBoard = list(self.board)
-        board = self.rotate(actionTools["rotate"])
+        self.board = self.rotate(actionTools["rotate"])
         for i in range(self.size):
-            board[i] = self.row_sum(board[i], actionTools)
-            self.has_2048(board[i])
-        board = self.rotate(actionTools["rotate"])
+            self.board[i] = self.row_sum(self.board[i], actionTools)
+            self.has_2048(self.board[i])
+        self.board = self.rotate(actionTools["rotate"])
 
         hasEmpty = self.has_empty_field()
-        if hasEmpty and oldBoard == board:
+        if hasEmpty and oldBoard == self.board:
             print 'No move. Please choose another action'
-            return self.move(arrows[self.enter_direction()])
-        elif oldBoard != board and not self.has2048:
+            self.move(self.enter_direction())
+        elif oldBoard != self.board and not self.has2048:
             self.random_coord()
-            return True
+            self.isActive = True
         # elif not hasEmpty and not check_sum_opportunity() or has2048:
         elif not hasEmpty or self.has2048:
-            return self.is_continue()
-
+            self.isActive = self.is_continue()
