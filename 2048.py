@@ -15,7 +15,6 @@ parserA.add_argument('-k', action='store', dest='k', type='int', help='Simple va
 '''
 
 game = Struct2048(options.size, options.empty)
-print args
 
 if options.load:
     game.board = game.sql.get(game.sqlNameKey)
