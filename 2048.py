@@ -1,11 +1,11 @@
 from struct_improved import Struct2048
 from optparse import OptionParser
+
 #import argparse
 
 parserO = OptionParser()
-parserO.add_option("-c", '--continue', dest="iscontinue", type='int', default='0', help='Continue game')
+parserO.add_option("-l", '--load', dest="load", default='0', help='Load game')
 parserO.add_option("-s", '--size', dest="size", type='int', default='4', help='Size board')
-parserO.add_option("-n", '--new', dest="new_game", type='int', default='0', help='Start new game')
 parserO.add_option("-e", '--empty', dest="empty", type='str', default='0', help='Value of empty fields')
 (options, args) = parserO.parse_args()
 '''
@@ -15,20 +15,14 @@ parserA.add_argument('-k', action='store', dest='k', type='int', help='Simple va
 '''
 
 game = Struct2048(options.size, options.empty)
+print args
 
-game.generate_board()
-game.print_board()
-
-'''
-
-isActive = True
-random_coord(2)
+if options.load:
+    game.board = game.sql.get(game.sqlNameKey)
+else:
+    game.generate_board()
 
 # isActive = False - "game over"
-while isActive:
-    print_board()
-    isActive = move(enter_direction())
-    #isActive = move(arrows['a'])
-
-
-'''
+while game.isActive:
+    game.print_board()
+    game.move(game.enter_direction())
